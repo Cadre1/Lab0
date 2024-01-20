@@ -47,8 +47,8 @@ def step_response():
     for i in range(float_queue.available()):
         times = i*10
         volts = float_queue.get()*(3.3/4095)
-        Serial.print(f'{times:.0f},{volts:.5f}')    
-    Serial.print('End')
+        print(f'{times:.0f},{volts:.5f}')    
+    print('End')
     
 if __name__ == "__main__":
     # Waits for an input to the Serial
