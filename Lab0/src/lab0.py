@@ -1,5 +1,5 @@
 """!
-@file lab0example.py
+@file lab0.py
 Run real or simulated dynamic response tests and plot the results. This program
 demonstrates a way to make a simple GUI with a plot in it. It uses Tkinter, an
 old-fashioned and ugly but useful GUI library which is included in Python by
@@ -8,13 +8,14 @@ default.
 This file is based loosely on an example found at
 https://matplotlib.org/stable/gallery/user_interfaces/embedding_in_tk_sgskip.html
 
-@author Spluttflob
-@date   2023-12-24 Original program, based on example from above listed source
+@original author Spluttflob
+@date   2023-	12-24 Original program, based on example from above listed source
 @copyright (c) 2023 by Spluttflob and released under the GNU Public Licenes V3
 """
 
 import tkinter
 import serial
+import math
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
                                                NavigationToolbar2Tk)
@@ -89,6 +90,15 @@ def plot_output(plot_axes, plot_canvas, xlabel, ylabel):
         plot_axes.set_ylabel(ylabel)
         plot_axes.grid(True)
         plot_canvas.draw()
+        
+        # Draw Theoretical Response on the plot based on the recorded time values
+        ylist = [3.3*(1-math.exp(-x/R*C)) for x in xlist]
+        plot_axes.plot(xlist, ylist)
+        plot_axes.set_xlabel(xlabel)
+        plot_axes.set_ylabel(ylabel)
+        plot_axes.grid(True)
+        plot_canvas.draw()
+        
         
         # Close the serial port
         serial_port.close()
