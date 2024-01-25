@@ -23,9 +23,7 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 
 def plot_output(plot_axes, plot_canvas, xlabel, ylabel):
     """!
-    Make an example plot to show a simple(ish) way to embed a plot into a GUI.
-    The data is just a nonsense simulation of a diving board from which a
-    typically energetic otter has just jumped.
+    Collects data from the test run.
     @param plot_axes The plot axes supplied by Matplotlib
     @param plot_canvas The plot canvas, also supplied by Matplotlib
     @param xlabel The label for the plot's horizontal axis
@@ -84,6 +82,13 @@ def plot_output(plot_axes, plot_canvas, xlabel, ylabel):
                     ylist.append(float(line[1])) # Adds passed float value to y-values
             except Exception as error:
                     print(error)
+            """!
+            Serial Connection Procedure.  This try loop attempts to connect to the serial port, resets the code on the nucleo, and then runs the response function already on the nucleo.
+            @param com_port Is the port that has the serial connection to the nucleo
+            @param xlist Is the list of x values collected by the code
+            @param ylist Is the list of y values collected by the code
+            """
+            
         # Draw the plot. Of course, the axes must be labeled. A grid is optional
         plot_axes.plot(xlist, ylist)
         plot_axes.set_xlabel(xlabel)
