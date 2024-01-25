@@ -1,6 +1,6 @@
 """!
 @file lab0.py
-Run real or simulated dynamic response tests and plot the results. This program
+Runs a real and simulated dynamic response to a step response and plots the results. This program
 demonstrates a way to make a simple GUI with a plot in it. It uses Tkinter, an
 old-fashioned and ugly but useful GUI library which is included in Python by
 default.
@@ -8,8 +8,8 @@ default.
 This file is based loosely on an example found at
 https://matplotlib.org/stable/gallery/user_interfaces/embedding_in_tk_sgskip.html
 
-@original author Spluttflob
-@date   2023-	12-24 Original program, based on example from above listed source
+@author Spluttflob (original)
+@date   2023-12-24 Original program, based on example from above listed source
 @copyright (c) 2023 by Spluttflob and released under the GNU Public Licenes V3
 """
 
@@ -23,20 +23,22 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 
 def plot_output(plot_axes, plot_canvas, xlabel, ylabel):
     """!
-    Collects data from the test run.
+    Collects data from the test run when Run Test is clicked by reseting the step_response
+    program on the microcontroller and reading the printed data to the connected COM Port. Then plots
+    the collected data and produces a plot for theoretical data on the same canvas.
     @param plot_axes The plot axes supplied by Matplotlib
     @param plot_canvas The plot canvas, also supplied by Matplotlib
     @param xlabel The label for the plot's horizontal axis
     @param ylabel The label for the plot's vertical axis
     """
-    # Here we create some fake data. It is put into an X-axis list (times) and
-    # a Y-axis list (boing). Real test data will be read through the USB-serial
-    # port and processed to make two lists like these
+    
+    # Real test data is read through the USB-serial
+    # port and processed to make two lists, xlist and ylist
     
     # States COM device (May vary with different computers)
     com_port = 'COM5'
     
-    # Tries to open the defined serial port
+    # Tries to open the defined serial port and run data, and if it can not, will print error
     try:
         serial_port = serial.Serial(com_port, baudrate=115200, timeout=1)
     except serial.SerialException as error:
@@ -45,7 +47,7 @@ def plot_output(plot_axes, plot_canvas, xlabel, ylabel):
         # Uses readline() method to open file as read and run exceptions
         xlist = [] # List of x-values
         ylist = [] # List of y-values
-        # Writes "b'\x04" (Ctrl-D) to reset the serial port
+        # Writes "b'\x04" (Ctrl-D) to reset the serial port and rerun main on microcontroller
         serial_port.write(b'\x04') 
         while True:
             # Catches any errors in converting Bytes to Strings
@@ -83,33 +85,27 @@ def plot_output(plot_axes, plot_canvas, xlabel, ylabel):
                     ylist.append(float(line[1])) # Adds passed float value to y-values
             except Exception as error:
                     print(error)
-            """!
-            Serial Connection Procedure.  This try loop attempts to connect to the serial port, resets the code on the nucleo, and then runs the response function already on the nucleo.
-            @param com_port Is the port that has the serial connection to the nucleo
-            @param xlist Is the list of x values collected by the code
-            @param ylist Is the list of y values collected by the code
-            """
             
-        # Draw the plot. Of course, the axes must be labeled. A grid is optional
+        # Draw the experimental plot.
         plot_axes.plot(xlist, ylist)
         plot_axes.set_xlabel(xlabel)
         plot_axes.set_ylabel(ylabel)
         plot_axes.grid(True)
         plot_canvas.draw()        
         
-        # Close the serial port
+        # Closes the serial port
         serial_port.close()
-#         
-#     # Draw Theoretical Response on the plot based on the recorded time values
-#     R = 100*10**3 # Ohms
-#     C = 3.3*10**-6 # Farads
-#     xlist2 = xlist
-#     ylist2 = [3.3*(1-math.exp(-x/(1000*R*C))) for x in xlist2] # where x is in milliseconds
-#     plot_axes.plot(xlist2, ylist2)
-#     plot_axes.set_xlabel(xlabel)
-#     plot_axes.set_ylabel(ylabel)
-#     plot_axes.grid(True)
-#     plot_canvas.draw()
+        
+    # Draw Theoretical Response on the plot based on the recorded time values
+    R = 100*10**3 # Ohms
+    C = 3.3*10**-6 # Farads
+    xlist2 = xlist
+    ylist2 = [3.3*(1-math.exp(-x/(1000*R*C))) for x in xlist2] # where x is in milliseconds
+    plot_axes.plot(xlist2, ylist2)
+    plot_axes.set_xlabel(xlabel)
+    plot_axes.set_ylabel(ylabel)
+    plot_axes.grid(True)
+    plot_canvas.draw()
 
 
 def tk_matplot(plot_function, xlabel, ylabel, title):
