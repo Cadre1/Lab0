@@ -41,17 +41,18 @@ def plot_output(plot_axes, plot_canvas, xlabel, ylabel):
         serial_port = serial.Serial(com_port, baudrate=115200, timeout=1)
     except serial.SerialException as error:
         print(f"could not open serial port '{com_port}': {error}")
-    else:
-        # Writes "b'\x04" (Ctrl-D) to reset the serial port
-        serial_port.write(b'\x04')      
+    else:     
         # Uses readline() method to open file as read and run exceptions
         xlist = [] # List of x-values
         ylist = [] # List of y-values
+        # Writes "b'\x04" (Ctrl-D) to reset the serial port
+        serial_port.write(b'\x04') 
         while True:
             # Catches any errors in converting Bytes to Strings
             try:
                 # Reads each line printed by the serial port
                 line = serial_port.readline()
+                print(line)
                 # Skips processing any blank lines
                 if line == '':
                     pass
@@ -98,17 +99,17 @@ def plot_output(plot_axes, plot_canvas, xlabel, ylabel):
         
         # Close the serial port
         serial_port.close()
-        
-    # Draw Theoretical Response on the plot based on the recorded time values
-    R = 100*10**3 # Ohms
-    C = 3.3*10**-6 # Farads
-    xlist = list(range(0,5000))
-    ylist = [3.3*(1-math.exp(-x/(1000*R*C))) for x in xlist] # where x is in milliseconds
-    plot_axes.plot(xlist, ylist)
-    plot_axes.set_xlabel(xlabel)
-    plot_axes.set_ylabel(ylabel)
-    plot_axes.grid(True)
-    plot_canvas.draw()
+#         
+#     # Draw Theoretical Response on the plot based on the recorded time values
+#     R = 100*10**3 # Ohms
+#     C = 3.3*10**-6 # Farads
+#     xlist2 = xlist
+#     ylist2 = [3.3*(1-math.exp(-x/(1000*R*C))) for x in xlist2] # where x is in milliseconds
+#     plot_axes.plot(xlist2, ylist2)
+#     plot_axes.set_xlabel(xlabel)
+#     plot_axes.set_ylabel(ylabel)
+#     plot_axes.grid(True)
+#     plot_canvas.draw()
 
 
 def tk_matplot(plot_function, xlabel, ylabel, title):

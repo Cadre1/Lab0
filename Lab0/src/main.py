@@ -22,6 +22,7 @@ def step_response():
     """!
         Main function setting up interrupts, pins, queues, and prints output voltages
     """
+    print('Start')
     
     # Initializing Timer Callback
     tim = pyb.Timer(1)
@@ -58,5 +59,6 @@ if __name__ == "__main__":
     # Initializing Readable Pin, Pin B0, and Queue, float_queue, as global
     pinB0 = pyb.ADC(pyb.Pin.board.PB0)
     float_queue = cqueue.FloatQueue(201)
+    print('Start')
 
     step_response()
