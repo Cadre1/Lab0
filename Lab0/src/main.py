@@ -1,16 +1,20 @@
-"""! @file main.py (copy of step_response.py)
+"""! @file main.py (Copy of step_response.py)
 Creates and records the response of the given circuit for a step response input 
 """
 
 import utime
 import cqueue
 
+# Initializing Readable Pin, Pin B0, and Queue, float_queue as global
+pinB0 = pyb.ADC(pyb.Pin.board.PB0)
+float_queue = cqueue.FloatQueue(201)
+utime.sleep(1)
+
 # Timer Interrupt
 def timer_float(tim):
     """!
         Interrupt callback function that measures voltages every 10ms
     """
-    
     # Checks if queue is full and either stops the interrupt callbacks or adds value to queue
     if float_queue.full():
         tim.callback(None)
@@ -50,12 +54,4 @@ def step_response():
     print('End')
     
 if __name__ == "__main__":
-    # Waits for an input to the Serial
-#     while not Serial.available():
-#         pass
-#     
-    # Initializing Readable Pin, Pin B0, and Queue, float_queue, as global
-    pinB0 = pyb.ADC(pyb.Pin.board.PB0)
-    float_queue = cqueue.FloatQueue(201)
-
     step_response()

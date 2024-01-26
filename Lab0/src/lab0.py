@@ -48,24 +48,21 @@ def plot_output(plot_axes, plot_canvas, xlabel, ylabel):
         xlist = [] # List of x-values
         ylist = [] # List of y-values
         # Writes "b'\x04" (Ctrl-D) to reset the serial port and rerun main on microcontroller
-        serial_port.write(b'\x04') 
+        serial_port.write(b'\x04')
+        
         while True:
             # Catches any errors in converting Bytes to Strings
             try:
                 # Reads each line printed by the serial port
-                line = serial_port.readline()
-                print(line)
+                line = serial_port.readline().decode('utf-8').strip()
+                # print(line)
                 # Skips processing any blank lines
                 if line == '':
+                    # print("no input")
                     pass
-                # Converts the returned Byte format to String
-                line = line.decode('utf-8')
-                # Formats each line to be 0-2 values with no comments or \r\n
-                line = line[:-2] # Removes \r\n
-                # Checks if line says "End" and stops reading values
                 if line == 'End':
+                    # print("broke out")
                     break
-                    print("broke out")
                 #print(line)
                 line = line.split(',') # Separates each comma separated value
                 line = line[:2] # Limits the number of values per line to 2
@@ -86,15 +83,15 @@ def plot_output(plot_axes, plot_canvas, xlabel, ylabel):
             except Exception as error:
                     print(error)
             
+        # Closes the serial port
+        serial_port.close()
+        
         # Draw the experimental plot.
         plot_axes.plot(xlist, ylist)
         plot_axes.set_xlabel(xlabel)
         plot_axes.set_ylabel(ylabel)
         plot_axes.grid(True)
         plot_canvas.draw()        
-        
-        # Closes the serial port
-        serial_port.close()
         
     # Draw Theoretical Response on the plot based on the recorded time values
     R = 100*10**3 # Ohms
@@ -132,7 +129,11 @@ def tk_matplot(plot_function, xlabel, ylabel, title):
     canvas = FigureCanvasTkAgg(fig, master=tk_root)
     toolbar = NavigationToolbar2Tk(canvas, tk_root, pack_toolbar=False)
     toolbar.update()
-
+    
+    # Running main.py on the microcontroller to fix initial run issues
+    plot_function(axes, canvas, xlabel, ylabel)
+    axes.clear()
+    
     # Create the buttons that run tests, clear the screen, and exit the program
     button_quit = tkinter.Button(master=tk_root,
                                  text="Quit",
